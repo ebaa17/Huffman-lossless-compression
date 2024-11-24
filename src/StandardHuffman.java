@@ -24,13 +24,20 @@ public class StandardHuffman {
         for (var entry : freqMap.entrySet()) {
             pq.add(new Node(entry.getKey(), entry.getValue()));
         }
-        while (pq.size() > 1) {
-            Node left = pq.poll();
-            Node right = pq.poll();
-            pq.add(new Node(left.freq + right.freq, left, right));
+        if (freqMap.size() == 1) { // case "aaaaaaa" for example
+            char singleChar = input.charAt(0);
+            root = new Node(singleChar, freqMap.get(singleChar));
+            charToCode.put(singleChar, "0");
+            codeToChar.put("0", singleChar);
+        } else {
+            while (pq.size() > 1) {
+                Node left = pq.poll();
+                Node right = pq.poll();
+                pq.add(new Node(left.freq + right.freq, left, right));
+            }
+            root = pq.poll();
+            generateCodes(root, "");
         }
-        root = pq.poll();
-        generateCodes(root, "");
         StringBuilder encoded = new StringBuilder();
         for (char c : input.toCharArray()) {
             encoded.append(charToCode.get(c));
@@ -40,6 +47,9 @@ public class StandardHuffman {
 
     public String decompress(String inputFilePath) throws IOException {
         String encoded = Files.readString(Paths.get(inputFilePath));
+        if (root.isLeaf()) {
+            return encoded.replaceAll("0", String.valueOf(root.data));
+        }
         StringBuilder decoded = new StringBuilder();
         Node current = root;
         for (char bit : encoded.toCharArray()) {
@@ -54,12 +64,10 @@ public class StandardHuffman {
 
     private void generateCodes(Node node, String code) {
         if (node == null) return;
-
         if (node.isLeaf()) {
             charToCode.put(node.data, code);
             codeToChar.put(code, node.data);
         }
-
         generateCodes(node.left, code + "0");
         generateCodes(node.right, code + "1");
     }
