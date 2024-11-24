@@ -1,5 +1,4 @@
 import java.io.*;
-import java.util.*;
 import java.nio.file.*;
 
 
@@ -8,10 +7,11 @@ class Main {
         String inputFile = "input.txt";
         String compressedFile = "compressed.bin";
         String decompressedFile = "decompressed.txt";
-
-
-        Files.readAllBytes(Paths.get(inputFile));
-
+        StandardHuffman huffman = new StandardHuffman();
+        String inputText = Files.readString(Paths.get(inputFile));
+        huffman.compress(inputText, compressedFile);
+        String decompressedText = huffman.decompress(compressedFile);
+        Files.writeString(Paths.get(decompressedFile), decompressedText);
 
     }
 }
