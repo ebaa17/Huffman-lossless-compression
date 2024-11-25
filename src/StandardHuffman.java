@@ -67,6 +67,7 @@ public class StandardHuffman {
         if (node.isLeaf()) {
             charToCode.put(node.data, code);
             codeToChar.put(code, node.data);
+            System.out.println("char: " + node.data + " code: " + code);
         }
         generateCodes(node.left, code + "0");
         generateCodes(node.right, code + "1");
